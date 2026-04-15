@@ -205,6 +205,26 @@
         </article>
 
         <script>
+            function decodeBase64UrlJson(value) {
+                if (!value) {
+                    return null;
+                }
+
+                try {
+                    const normalized = value
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/")
+                        .padEnd(Math.ceil(value.length / 4) * 4, "=");
+                    const binary = atob(normalized);
+                    const bytes = Uint8Array.from(binary, (char) =>
+                        char.charCodeAt(0),
+                    );
+                    return JSON.parse(new TextDecoder().decode(bytes));
+                } catch {
+                    return null;
+                }
+            }
+
             function formatIssuedAtDisplay(value) {
                 if (!value) {
                     return "-";
@@ -229,14 +249,19 @@
             }
 
             const params = new URLSearchParams(window.location.search);
-            const status = params.get("status") || "ok";
-            const title = params.get("title");
-            const message = params.get("message");
+            const payload = decodeBase64UrlJson(params.get("data")) || {};
+            const status = payload.status || params.get("status") || "ok";
+            const title = payload.title || params.get("title");
+            const message = payload.message || params.get("message");
 
-            const merchantName = params.get("merchantName") || "Merchant Kamu";
-            const logoUrl = params.get("logoUrl") || "";
+            const merchantName =
+                payload.merchantName ||
+                params.get("merchantName") ||
+                "Merchant Kamu";
+            const logoUrl = payload.logoUrl || params.get("logoUrl") || "";
 
-            const queueNumberRaw = params.get("queueNumber");
+            const queueNumberRaw =
+                payload.queueNumber || params.get("queueNumber");
             const queueNumber = queueNumberRaw
                 ? String(queueNumberRaw).padStart(3, "0")
                 : "-";
@@ -245,9 +270,11 @@
             document.getElementById("queueNumber").textContent = queueNumber;
             document.title = `${merchantName} - Nota Antrean`;
             document.getElementById("issuedAt").textContent =
-                formatIssuedAtDisplay(params.get("issuedAt"));
+                formatIssuedAtDisplay(
+                    payload.issuedAt || params.get("issuedAt"),
+                );
             document.getElementById("ticketId").textContent =
-                params.get("ticketId") || "-";
+                payload.ticketId || params.get("ticketId") || "-";
 
             const logo = document.getElementById("logo");
             if (logoUrl) {

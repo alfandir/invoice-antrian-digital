@@ -205,6 +205,29 @@
         </article>
 
         <script>
+            function formatIssuedAtDisplay(value) {
+                if (!value) {
+                    return "-";
+                }
+
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) {
+                    return value;
+                }
+
+                return (
+                    new Intl.DateTimeFormat("id-ID", {
+                        weekday: "long",
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        timeZone: "Asia/Jakarta",
+                    }).format(date) + " WIB"
+                );
+            }
+
             const params = new URLSearchParams(window.location.search);
             const status = params.get("status") || "ok";
             const title = params.get("title");
@@ -220,8 +243,9 @@
 
             document.getElementById("merchantName").textContent = merchantName;
             document.getElementById("queueNumber").textContent = queueNumber;
+            document.title = `${merchantName} - Nota Antrean`;
             document.getElementById("issuedAt").textContent =
-                params.get("issuedAt") || "-";
+                formatIssuedAtDisplay(params.get("issuedAt"));
             document.getElementById("ticketId").textContent =
                 params.get("ticketId") || "-";
 
@@ -243,7 +267,8 @@
                 messageBox.classList.remove("ok");
                 messageBox.classList.add("warn");
             } else {
-                subtitle.textContent = "Nota antrean digital";
+                subtitle.textContent =
+                    "Invoice antrean dari scan QR tiket pelanggan";
                 messageBox.textContent = `Terima kasih telah mengambil nomor antrean di ${merchantName}. Silakan tunggu panggilan.`;
             }
         </script>

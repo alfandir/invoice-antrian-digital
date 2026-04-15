@@ -3,151 +3,205 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Invoice Antrean</title>
+        <title>Nota Antrean</title>
         <style>
             :root {
-                --bg: #f4f8fb;
-                --card: #ffffff;
-                --ink: #102027;
-                --muted: #4c5b61;
-                --accent: #005a78;
-                --ok-bg: #e9f8ee;
+                --paper: #fffefc;
+                --ink: #232323;
+                --muted: #676767;
+                --line: #d4d4d4;
                 --ok: #1f7a3e;
-                --warn-bg: #fff5e6;
-                --warn: #a05a00;
+                --warn: #9a5a00;
+                --bg: #eceff3;
+            }
+            * {
+                box-sizing: border-box;
             }
             body {
                 margin: 0;
-                background: radial-gradient(
-                    circle at top right,
-                    #d5edf5,
-                    var(--bg)
-                );
-                font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                background: linear-gradient(180deg, #e3e8ef, var(--bg));
+                font-family: "Courier New", Courier, monospace;
                 color: var(--ink);
                 min-height: 100vh;
                 display: grid;
                 place-items: center;
                 padding: 20px;
             }
-            .card {
-                width: min(540px, 96vw);
-                background: var(--card);
-                border-radius: 16px;
-                box-shadow: 0 14px 40px rgba(8, 38, 48, 0.14);
-                overflow: hidden;
-                border: 1px solid #d9e6ed;
+            .receipt {
+                width: min(380px, 96vw);
+                background: var(--paper);
+                border: 1px solid var(--line);
+                box-shadow: 0 16px 30px rgba(15, 25, 35, 0.2);
+                position: relative;
+                padding: 16px;
             }
-            .head {
-                background: linear-gradient(135deg, #005a78, #1f7a96);
-                color: #fff;
-                padding: 20px;
+            .receipt::before,
+            .receipt::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                height: 8px;
+                background: repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 6px,
+                    rgba(0, 0, 0, 0.08) 6px,
+                    rgba(0, 0, 0, 0.08) 12px
+                );
             }
-            .head h1 {
+            .receipt::before {
+                top: -8px;
+            }
+            .receipt::after {
+                bottom: -8px;
+            }
+            .center {
+                text-align: center;
+            }
+            .logo {
+                width: 68px;
+                height: 68px;
+                border-radius: 10px;
+                object-fit: cover;
+                border: 1px solid var(--line);
+                display: none;
+                margin: 0 auto 10px;
+            }
+            .merchant {
+                font-weight: 700;
+                font-size: 18px;
+                letter-spacing: 0.4px;
                 margin: 0;
-                font-size: 24px;
-                letter-spacing: 0.3px;
             }
-            .head p {
+            .sub {
+                margin: 4px 0 0;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .rule {
+                border-top: 1px dashed var(--line);
+                margin: 14px 0;
+            }
+            .queue-box {
+                border: 1px dashed var(--line);
+                padding: 12px;
+                text-align: center;
+                margin-bottom: 12px;
+            }
+            .queue-label {
+                font-size: 12px;
+                color: var(--muted);
+                margin: 0;
+            }
+            .queue-number {
                 margin: 6px 0 0;
-                opacity: 0.95;
-            }
-            .content {
-                padding: 20px;
-                display: grid;
-                gap: 12px;
+                font-size: 42px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                line-height: 1;
             }
             .row {
                 display: flex;
                 justify-content: space-between;
-                gap: 16px;
-                border-bottom: 1px dashed #dbe7ed;
-                padding-bottom: 10px;
+                gap: 12px;
+                font-size: 13px;
+                margin: 8px 0;
             }
-            .label {
+            .row .k {
                 color: var(--muted);
             }
-            .value {
-                font-weight: 700;
+            .row .v {
                 text-align: right;
+                font-weight: 700;
+                max-width: 60%;
                 word-break: break-word;
             }
-            .badge {
-                display: inline-flex;
-                border-radius: 999px;
-                padding: 6px 12px;
+            .status {
+                margin-top: 10px;
                 font-size: 13px;
                 font-weight: 700;
-                border: 1px solid;
-                width: fit-content;
+                text-align: center;
+                padding: 8px;
+                border: 1px dashed var(--line);
             }
-            .badge-ok {
-                background: var(--ok-bg);
+            .status.ok {
                 color: var(--ok);
-                border-color: #ccead6;
             }
-            .badge-warn {
-                background: var(--warn-bg);
+            .status.warn {
                 color: var(--warn);
-                border-color: #f3d7aa;
             }
             .actions {
-                padding: 0 20px 20px;
                 display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 14px;
             }
             .btn {
-                text-decoration: none;
-                border: none;
-                border-radius: 10px;
-                padding: 10px 14px;
-                font-size: 14px;
-                font-weight: 600;
+                background: #f2f4f7;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-family: inherit;
                 cursor: pointer;
             }
-            .btn-primary {
-                background: var(--accent);
-                color: #fff;
+            .footer {
+                margin-top: 12px;
+                text-align: center;
+                color: var(--muted);
+                font-size: 11px;
             }
-            .btn-ghost {
-                background: #edf4f7;
-                color: #10313c;
+            @media print {
+                body {
+                    background: #fff;
+                    padding: 0;
+                }
+                .receipt {
+                    box-shadow: none;
+                    border: none;
+                    width: 100%;
+                }
+                .actions {
+                    display: none;
+                }
+                .receipt::before,
+                .receipt::after {
+                    display: none;
+                }
             }
         </style>
     </head>
     <body>
-        <article class="card" role="article" aria-label="Invoice antrean">
-            <header class="head">
-                <h1 id="title">Invoice Antrean</h1>
-                <p id="subtitle">
-                    Dokumen ini dibuat dari scan QR tiket antrean.
-                </p>
+        <article class="receipt" role="article" aria-label="Nota antrean">
+            <header class="center">
+                <img id="logo" class="logo" alt="Logo merchant" />
+                <h1 id="merchantName" class="merchant">Merchant Kamu</h1>
+                <p id="subtitle" class="sub">Nota antrean digital</p>
             </header>
 
-            <section class="content" id="content">
+            <div class="rule"></div>
+
+            <section class="queue-box">
+                <p class="queue-label">NOMOR ANTREAN</p>
+                <p class="queue-number" id="queueNumber">-</p>
+            </section>
+
+            <section>
                 <div class="row">
-                    <span class="label">Nomor Antrean</span>
-                    <span class="value" id="queueNumber">-</span>
+                    <span class="k">Tanggal/Jam</span>
+                    <span class="v" id="issuedAt">-</span>
                 </div>
                 <div class="row">
-                    <span class="label">Timestamp</span>
-                    <span class="value" id="issuedAt">-</span>
-                </div>
-                <div class="row">
-                    <span class="label">Ticket ID</span>
-                    <span class="value" id="ticketId">-</span>
-                </div>
-                <div>
-                    <span class="badge badge-ok" id="badge">Terverifikasi</span>
+                    <span class="k">Ticket ID</span>
+                    <span class="v" id="ticketId">-</span>
                 </div>
             </section>
 
-            <section class="actions">
-                <button class="btn btn-ghost" onclick="window.print()">
-                    Print
-                </button>
-            </section>
+            <div id="messageBox" class="status ok">
+                Terima kasih telah berkunjung. Mohon tunggu nomor Anda
+                dipanggil.
+            </div>
+
+            <p class="footer">Simpan nota ini sebagai bukti antrean</p>
         </article>
 
         <script>
@@ -156,36 +210,41 @@
             const title = params.get("title");
             const message = params.get("message");
 
+            const merchantName = params.get("merchantName") || "Merchant Kamu";
+            const logoUrl = params.get("logoUrl") || "";
+
             const queueNumberRaw = params.get("queueNumber");
             const queueNumber = queueNumberRaw
                 ? String(queueNumberRaw).padStart(3, "0")
                 : "-";
 
+            document.getElementById("merchantName").textContent = merchantName;
             document.getElementById("queueNumber").textContent = queueNumber;
             document.getElementById("issuedAt").textContent =
                 params.get("issuedAt") || "-";
             document.getElementById("ticketId").textContent =
                 params.get("ticketId") || "-";
 
-            const badge = document.getElementById("badge");
-            const verified = params.get("verified") === "true";
+            const logo = document.getElementById("logo");
+            if (logoUrl) {
+                logo.src = logoUrl;
+                logo.style.display = "block";
+            }
+
+            const subtitle = document.getElementById("subtitle");
+            const messageBox = document.getElementById("messageBox");
 
             if (status === "error") {
-                document.getElementById("title").textContent =
-                    title || "Invoice Tidak Tersedia";
-                document.getElementById("subtitle").textContent =
+                const errorTitle = title || "Invoice Tidak Tersedia";
+                const errorMessage =
                     message || "Terjadi masalah saat membuka invoice.";
-                badge.textContent = "Perlu Perhatian";
-                badge.classList.remove("badge-ok");
-                badge.classList.add("badge-warn");
+                subtitle.textContent = `${errorTitle} - ${errorMessage}`;
+                messageBox.textContent = errorMessage;
+                messageBox.classList.remove("ok");
+                messageBox.classList.add("warn");
             } else {
-                badge.textContent = verified
-                    ? "Terverifikasi"
-                    : "Belum Terverifikasi";
-                if (!verified) {
-                    badge.classList.remove("badge-ok");
-                    badge.classList.add("badge-warn");
-                }
+                subtitle.textContent = "Nota antrean digital";
+                messageBox.textContent = `Terima kasih telah mengambil nomor antrean di ${merchantName}. Silakan tunggu panggilan.`;
             }
         </script>
     </body>
